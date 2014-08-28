@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,width=device-width">
+        <title>Brick Game</title>
+        <link rel="shortcut icon" type="image/png" href="favicon.png">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="status" class="status"></div>
+        <div id="popup">
+            <div id="intro" class="popup">
+                <div class="title">Brick Game</div>
+                <div class="subtitle">Keyboard control</div>
+                <table>
+                    <tr><td class="keybtn">H</td><td>On/Off AI</td></tr>
+                    <tr><td class="keybtn">ESC</td><td>Pause</td></tr>
+                    <tr><td class="keybtn">Arrow Up</td><td>Rotate</td></tr>
+                    <tr><td class="keybtn">Arrow Left</td><td>Move Left</td></tr>
+                    <tr><td class="keybtn">Arrow Right</td><td>Move Right</td></tr>
+                    <tr><td class="keybtn">Arrow Down</td><td>Fast down</td></tr>
+                </table>
+                <div class="subtitle">Mouse & Touch control</div>
+                <table>
+                    <tr><td class="keybtn">Click up of Brick</td><td>Rotate</td></tr>
+                    <tr><td class="keybtn">Click left of Brick</td><td>Move Left</td></tr>
+                    <tr><td class="keybtn">Click right of Brick</td><td>Move Right</td></tr>
+                    <tr><td class="keybtn">Click under of Brick</td><td>Fast down</td></tr>
+                </table>
+                <div class="button-box"><div class="button">Start game</div></div>
+            </div>
+        </div>
+        <div id="window"></div>
+        <script src="app.js"></script>
+    </body>
+</html>

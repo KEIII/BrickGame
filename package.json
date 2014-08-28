@@ -1,0 +1,34 @@
+{
+  "name": "Brick Game",
+  "version": "0.5",
+  "description": "Tile-matching puzzle game.",
+  "author": {
+    "name": "Ivan Kasenkov",
+    "email": "kacenkov7@gmail.com"
+  },
+  "license": "MIT",
+  "files": {
+    "client": {
+      "js": {
+        "files": [
+          "js/start.js",
+          "js/lib.js",
+          "js/figures.js",
+          "js/draw.js",
+          "js/app.js",
+          "js/events.js",
+          "js/ai.js",
+          "js/end.js"
+        ],
+        "dest": "docs/app.js"
+      },
+      "css": {
+        "files": [
+          "css/normalize.css",
+          "css/style.css"
+        ],
+        "dest": "docs/style.css"
+      }
+    }
+  }
+}
