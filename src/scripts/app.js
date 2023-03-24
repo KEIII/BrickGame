@@ -1,22 +1,34 @@
 import { RandomPieceGenerator } from "./figures";
 import { DeepCopy, eachMatrix, formatNumber } from "./lib";
 import { AI } from "./ai";
+import { createRenderer } from "./render";
 
-export const App = {};
-App.fieldX = 10; // размер поля по горизонтали
-App.fieldY = 22; // размер поля по вертикали
-App.speedStart = 1000; // начальное время (скорость)
-App.speedStep = 1; // процент уменьшения времени
-App.speedCurrent = null; // текущее время (скорость)
-App.currentFigure = null; // падующая фигура
-App.nextFigure = null; // следующая фигура
-App.bagFigures = [];
-App.timeout = null;
-App.field = null;
-App.score = null; // счет (кол-во линий)
-App.startTime = null; // время запуска игры
-App.isPause = true;
-App.turnOnAI = false;
+const fieldX = 10; // размер поля по горизонтали
+const fieldY = 22; // размер поля по вертикали
+
+export const App = {
+  fieldX,
+  fieldY,
+  renderer: createRenderer({
+    x: fieldX,
+    y: fieldY,
+    onElement: (el) => {
+      document.getElementById("game-window").append(el);
+    },
+  }),
+  speedStart: 1000, // начальное время (скорость)
+  speedStep: 1, // процент уменьшения времени
+  speedCurrent: null, // текущее время (скорость)
+  currentFigure: null, // падующая фигура
+  nextFigure: null, // следующая фигура
+  bagFigures: [],
+  timeout: null,
+  field: null,
+  score: null, // счет (кол-во линий)
+  startTime: null, // время запуска игры
+  isPause: true,
+  turnOnAI: false,
+};
 
 const fillField = function () {
   const field = [];
@@ -304,7 +316,6 @@ function ClearLines() {
       });
     });
 
-    // Отрисовываем
     Draw();
 
     toRemove.forEach(function (index) {
@@ -405,67 +416,16 @@ export function GamePausePopup() {
   popup.addEventListener("click", listener, false);
 }
 
-const gameWindow = document.getElementById("window");
 const gameStatus = document.getElementById("status");
-const colors = [
-  "red", // 0
-  "orange", // 1
-  "yellow", // 2
-  "green", // 3
-  "cyan", // 4
-  "blue", // 5
-  "violet", // 6
-];
 
 function Draw() {
   if (App.field === null) return;
-
-  // style.css
-  const margin = 30;
-  const padding = 5;
-  const border = 2;
-
-  const aspectRatio = App.fieldY / App.fieldX;
-  const maxWidth = window.innerWidth - margin * 2;
-  const maxHeight = window.innerHeight - margin * 2;
-  let width = maxHeight / aspectRatio;
-  if (width > maxWidth) width = maxWidth;
-
-  const cellSize = Math.round((width - (padding + border) * 2) / App.fieldX);
-  const cellBorderSize = Math.round(cellSize * 0.04);
-  width = cellSize * App.fieldX + (padding + border) * 2;
-
-  let html = '<div class="field-box" style="width:' + width + 'px;">';
-  App.field.forEach(function (row) {
-    html += '<div class="row">';
-    row.forEach(function (cell) {
-      html +=
-        '<div style="border-width:' +
-        cellBorderSize +
-        "px;width:" +
-        cellSize +
-        "px;height:" +
-        cellSize +
-        'px;" class="brick ';
-      html += cell[0] === 1 ? colors[cell[1]] : "empty"; // цветная клетка или пустая
-      if (cell[2] === 1) html += " active"; // перемещаемая фигура
-      if (cell[3] === 1) html += " blink"; // мигать ли
-      if (cell[4] === 1) html += " next"; // маркер следующей фигуры
-      html += '"></div>';
-    });
-    html += "</div>";
+  App.renderer.render({
+    ai: App.turnOnAI,
+    score: App.score,
+    field: App.field,
+    updateStatus: (html) => (gameStatus.innerHTML = html),
   });
-  html += "</div>"; // field-box end
-
-  let status = "";
-  status += App.turnOnAI ? '<div class="item ai-title">AI</div>' : "";
-  status +=
-    App.score > 0
-      ? `<div class="item score">${formatNumber(App.score)}</div>`
-      : "";
-
-  gameStatus.innerHTML = status;
-  gameWindow.innerHTML = html;
 }
 
 // коррдинатная область
@@ -545,7 +505,7 @@ export const init = () => {
     });
   }
 
-  window.addEventListener("resize", Draw);
+  window.addEventListener("resize", App.renderer.resize);
 
   window.addEventListener("keydown", function (event) {
     if (isPause()) return;

@@ -188,7 +188,6 @@ function AIfieldRating(inField, inFigure) {
       if (cell[0] !== 1) fullLine = false;
     });
 
-    // if (fullLine) CompleteLines += App.fieldX;
     if (fullLine) CompleteLines++;
   });
 

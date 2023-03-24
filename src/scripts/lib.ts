@@ -1,4 +1,4 @@
-export function eachMatrix(matrix, fn, context) {
+export function eachMatrix(this: any, matrix: any, fn: any, context?: any) {
   let y = 0;
   const lenY = matrix.length;
   for (; y < lenY; y++) {
@@ -10,7 +10,7 @@ export function eachMatrix(matrix, fn, context) {
   }
 }
 
-export function DeepCopy(oldObj) {
+export function DeepCopy(oldObj: any) {
   let newObj = oldObj;
   if (oldObj && typeof oldObj === "object") {
     newObj =
@@ -26,7 +26,7 @@ export function DeepCopy(oldObj) {
 
 //+ Jonas Raoni Soares Silva
 //@ http://jsfromhell.com/array/shuffle [v1.0]
-export function shuffle(o) {
+export function shuffle(o: any) {
   //v1.0
   let j,
     x,
@@ -39,13 +39,12 @@ export function shuffle(o) {
   return o;
 }
 
-Number.prototype.formatMoney = function (x, y, z) {
-  let n = this;
-  const c = isNaN((x = Math.abs(x))) ? 2 : x,
-    d = y === undefined ? "." : y,
-    t = z === undefined ? "," : z,
-    s = n < 0 ? "-" : "",
-    i = parseInt((n = Math.abs(+n || 0).toFixed(c))) + "";
+const formatMoney = function (n: any, x: number, y: string, z: string) {
+  const c = isNaN((x = Math.abs(x))) ? 2 : x;
+  const d = y === undefined ? "." : y;
+  const t = z === undefined ? "," : z;
+  const s = n < 0 ? "-" : "";
+  const i = parseInt((n = Math.abs(n || 0).toFixed(c))) + "";
   let j = i.length;
   j = j > 3 ? j % 3 : 0;
   return (
@@ -54,14 +53,14 @@ Number.prototype.formatMoney = function (x, y, z) {
     i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) +
     (c
       ? d +
-        Math.abs(n - i)
+        Math.abs(n - Number(i))
           .toFixed(c)
           .slice(2)
       : "")
   );
 };
 
-export function formatNumber(num) {
+export function formatNumber(num: unknown) {
   const thinsp = " "; // thin space
-  return (+num).formatMoney(0, "", thinsp);
+  return formatMoney(Number(num), 0, "", thinsp);
 }
