@@ -8,8 +8,8 @@
   "scripts": {
     "prettier": "prettier --write \"./src/**/*.{js,ts}\"",
     "dev": "vite --open",
-    "preview": "vite preview --open --outDir=docs",
-    "build": "vite build --outDir=docs"
+    "preview": "vite preview --open --outDir=docs --base=./",
+    "build": "vite build --outDir=docs --base=./"
   },
   "dependencies": {
     "prettier": "^2.8.6",
