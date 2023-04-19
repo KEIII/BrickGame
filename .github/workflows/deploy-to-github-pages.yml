@@ -1,24 +1,32 @@
-name: Build and deploy to github pages
+name: Deployment to Pages
 
-on: [push]
+on:
+  push:
+    branches: ["main"]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }}
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Install and build
+      - name: Build
         run: |
           npm ci --no-audit --ignore-scripts
           npm run build
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          folder: docs
+          path: docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+      - run: echo ${{ steps.deployment.outputs.page_url }}
