@@ -12,7 +12,7 @@
     "build": "vite build --outDir=docs --base=./"
   },
   "dependencies": {
-    "prettier": "^2.8.6",
+    "prettier": "^3.5",
     "vite": "^4.2.1"
   }
 }
