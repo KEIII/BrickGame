@@ -70,7 +70,6 @@ export function isPause() {
 
 function Start() {
   // сбрасываем значения
-  App.turnOnAI = true;
   App.isPause = false;
   App.startTime = new Date();
   App.speedCurrent = App.speedStart;
@@ -225,7 +224,7 @@ export function DeleteFromField(inField, inFigure) {
           field[pos_y][pos_x][2] = 0;
           field[pos_y][pos_x][3] = 0;
         }
-      }
+      },
     );
   }
 
@@ -377,8 +376,7 @@ function GameOver() {
     formatNumber(App.score) +
     "</td></tr>";
   message += "<tr><td>Time</td><td>" + TimeDiff() + "</td></tr></table>";
-  message +=
-    '<div class="button-box"><div class="button">Start new game</div></div>';
+  message += '<div class="button-box"><div class="button">Restart</div></div>';
   message += "</div>";
   const popup = document.getElementById("popup");
   popup.innerHTML = message;
@@ -498,10 +496,20 @@ function GetMovedFigurePosition() {
 export const init = () => {
   {
     const intro = document.getElementById("intro");
-    intro.addEventListener("click", function (event) {
-      event.stopPropagation();
-      intro.parentNode.removeChild(intro);
-      setTimeout(Start, 0);
+
+    const removeIntro = () => intro.parentNode.removeChild(intro);
+
+    const playButton = document.getElementById("js-play-button");
+    playButton.addEventListener("click", () => {
+      removeIntro();
+      Start();
+    });
+
+    const watchAIButton = document.getElementById("js-watch-ai-button");
+    watchAIButton.addEventListener("click", function (event) {
+      removeIntro();
+      App.turnOnAI = true;
+      Start();
     });
   }
 
@@ -547,7 +555,7 @@ export const init = () => {
       fp.top,
       fp.bottom,
       event.clientX,
-      event.clientY
+      event.clientY,
     );
 
     if (area === 1 || area === 4 || area === 7) {

@@ -246,13 +246,14 @@ body:after {
 
     .popup .title {
         font-size: 2em;
-
+        text-align: center;
+        font-weight: bold;
         margin-bottom: .5em;
     }
 
     .popup .subtitle {
         font-size: 1.3em;
-
+        font-weight: bold;
         margin: 1em 0 .4em 0;
     }
 
@@ -266,7 +267,7 @@ body:after {
 
         display: inline-block;
 
-        padding: .5em;
+        padding: .5em .75rem;
 
         cursor: pointer;
         text-align: center;
@@ -285,17 +286,21 @@ body:after {
         opacity: .9;
     }
 
+    .popup table {
+        width: 100%;
+    }
+
     .popup td {
         padding: 3px 7px;
         margin: 3px 0;
         line-height: 1;
+        width: 50%;
     }
 
     .popup .keybtn {
         display: inline-block;
         padding: 5px;
-        /*background: #eee;*/
         color: #555;
-        box-shadow: 0 0 0 1px #ccc;
+        box-shadow: 0 1px 0 2px #3498db;
         border-radius: 4px;
     }
