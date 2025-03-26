@@ -286,10 +286,10 @@ export function Rotate() {
 }
 
 export function FastDown() {
-  clearTimeout(App.timeout);
+  cancelAnimationFrame(App.timeout);
 
   if (MoveDown() === true) {
-    App.timeout = setTimeout(FastDown, 7); // speed
+    App.timeout = requestAnimationFrame(FastDown); // speed
   } else {
     GameTimeout();
   }
