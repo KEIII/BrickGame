@@ -22,12 +22,20 @@ export const App = {
   currentFigure: null, // падующая фигура
   nextFigure: null, // следующая фигура
   bagFigures: [],
-  timeout: null,
   field: null,
   score: null, // счет (кол-во линий)
   startTime: null, // время запуска игры
   isPause: true,
   turnOnAI: false,
+  _timeoutId: null,
+  clearTimeout() {
+    window.cancelAnimationFrame(App._timeoutId);
+    window.clearTimeout(App._timeoutId);
+  },
+  delay(f, ms) {
+    App.clearTimeout();
+    App._timeoutId = window.setTimeout(f, ms);
+  },
 };
 
 const fillField = function () {
@@ -55,13 +63,13 @@ export function emptyRow() {
 }
 
 function GamePause() {
-  clearTimeout(App.timeout);
+  App.clearTimeout();
   App.isPause = true;
 }
 
 function GameResume() {
   App.isPause = false;
-  GameTimeout();
+  GameTick();
 }
 
 export function isPause() {
@@ -90,7 +98,6 @@ function GetNextFigure() {
 }
 
 function NewCircle() {
-  clearTimeout(App.timeout);
   App.currentFigure = null;
   App.field = DeleteActiveMarker(App.field);
 
@@ -108,28 +115,30 @@ function NewCircle() {
     App.nextFigure = GetNextFigure();
     UpdateNextFigureMarker();
     Draw();
-    GameTimeout();
+    GameTick();
 
     if (App.turnOnAI) AI();
   };
 
   if (ClearLines()) {
-    App.timeout = setTimeout(fn, App.turnOnAI ? 50 : 900); // кратно 300
+    const blinkAnimationDuration = 300;
+    App.delay(
+      fn,
+      /* время анимации удаления линии */ blinkAnimationDuration * 3,
+    );
   } else {
     fn();
   }
 }
 
-function GameTimeout() {
-  const fn = function () {
-    if (MoveDown() === true) {
-      GameTimeout();
+function GameTick() {
+  App.delay(() => {
+    if (MoveDown()) {
+      GameTick();
     } else {
       NewCircle();
     }
-  };
-  clearTimeout(App.timeout);
-  App.timeout = setTimeout(fn, App.turnOnAI ? 100 : App.speedCurrent);
+  }, /* скорость падения фигуры */ App.speedCurrent);
 }
 
 export function PutOnField(inField, figure) {
@@ -285,12 +294,12 @@ export function Rotate() {
 }
 
 export function FastDown() {
-  cancelAnimationFrame(App.timeout);
+  App.clearTimeout();
 
-  if (MoveDown() === true) {
-    App.timeout = requestAnimationFrame(FastDown); // speed
+  if (MoveDown()) {
+    App._timeoutId = requestAnimationFrame(FastDown);
   } else {
-    GameTimeout();
+    GameTick();
   }
 }
 
@@ -387,27 +396,6 @@ function GameOver() {
     event.stopPropagation();
     GameResume();
     Start();
-    popup.removeEventListener("click", listener, false);
-    popup.innerHTML = "";
-  };
-  popup.addEventListener("click", listener, false);
-}
-
-export function GamePausePopup() {
-  GamePause();
-  let message = '<div class="popup">';
-  message += '<div class="title">Paused</div>';
-  message +=
-    '<div class="button-box"><div class="button">Resume game</div></div>';
-  message += "</div>";
-  const popup = document.getElementById("popup");
-  popup.innerHTML = message;
-  GamePause(); // disable control
-
-  let listener;
-  listener = function (event) {
-    event.stopPropagation();
-    GameResume();
     popup.removeEventListener("click", listener, false);
     popup.innerHTML = "";
   };
@@ -528,6 +516,19 @@ export const init = () => {
   });
 
   window.addEventListener("keydown", function (event) {
+    if (event.code === "Escape") {
+      const el = document.getElementById("pause");
+      if (isPause()) {
+        if (el.style.display !== "none") {
+          GameResume();
+          el.style.display = "none";
+        }
+      } else {
+        GamePause();
+        el.style.display = "block";
+      }
+    }
+
     if (isPause()) return;
 
     if (event.code === "KeyH") {
@@ -537,11 +538,8 @@ export const init = () => {
         App.turnOnAI = true;
         AI();
       }
-    }
-    if (event.code === "ArrowDown") {
+    } else if (event.code === "ArrowDown") {
       FastDown();
-    } else if (event.code === "Escape") {
-      if (!isPause()) GamePausePopup();
     }
   });
 

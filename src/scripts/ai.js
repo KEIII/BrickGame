@@ -17,7 +17,7 @@ export function AI() {
     return false;
   }
 
-  clearTimeout(App.timeout);
+  App.clearTimeout();
 
   const field = DeleteFromField(App.field, App.currentFigure);
   const variants = AIgetPosibleVariants(field, App.currentFigure);
