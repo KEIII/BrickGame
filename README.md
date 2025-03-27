@@ -2,4 +2,4 @@
 
 Tile-matching puzzle game [demo](https://keiii.github.io/BrickGame/)
 
-[demo.webm](https://user-images.githubusercontent.com/1167833/227465865-4877f960-52ab-4f83-9242-4a15ac192468.webm)
+[demo.webm](https://github.com/user-attachments/assets/797e9813-9a70-47cd-877b-1fd2facce90f)
