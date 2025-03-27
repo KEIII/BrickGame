@@ -18,7 +18,7 @@ export const App = {
     },
   }),
   speedStart: 1000, // начальное время (скорость)
-  speedStep: 1, // процент уменьшения времени
+  speedStep: 0.75, // процент уменьшения времени за линию
   speedCurrent: null, // текущее время (скорость)
   currentFigure: null, // падующая фигура
   nextFigure: null, // следующая фигура
@@ -35,7 +35,7 @@ export const App = {
   },
   delay(f, ms) {
     App.clearTimeout();
-    App._timeoutId = window.setTimeout(f, ms);
+    App._timeoutId = window.setTimeout(f, AI_isON() ? App.speedCurrent : ms);
   },
   events: {
     newCircle: ksBehaviourSubject(),
@@ -344,14 +344,14 @@ function ClearLines() {
       App.field.unshift(emptyRow());
 
       // Увеличиваем скорость
-      App.speedCurrent -= (App.speedCurrent * App.speedStep) / 100;
+      App.speedCurrent = App.speedCurrent * App.speedStep;
       if (App.speedCurrent < 100) {
         App.speedCurrent = 300;
       }
 
       // Добавляем очков
       // бонус за кол-во линий
-      App.score += App.fieldX * toRemove.length;
+      App.score += 1;
     });
 
     return true;

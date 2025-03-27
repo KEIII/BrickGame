@@ -4,7 +4,6 @@ import {
   emptyRow,
   FastDown,
   isPause,
-  MoveDown,
   MoveLeft,
   MoveRight,
   PutOnField,
@@ -18,7 +17,7 @@ let _timeoutId;
 
 let _newCircleSup;
 
-const AI_SPEED = 300;
+const AI_SPEED = 200;
 
 const AI_Delay = (f) => {
   clearTimeout(_timeoutId);
