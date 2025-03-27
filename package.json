@@ -12,6 +12,7 @@
     "build": "vite build --outDir=docs --base=./"
   },
   "dependencies": {
+    "@keiii/k-stream": "^0.0.43",
     "prettier": "^3.5",
     "vite": "^4.2.1"
   }

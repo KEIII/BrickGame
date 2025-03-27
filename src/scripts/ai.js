@@ -12,12 +12,40 @@ import {
 } from "./app";
 import { DeepCopy } from "./lib";
 
-export function AI() {
+let _on = false;
+
+let _timeoutId;
+
+let _newCircleSup;
+
+const AI_SPEED = 300;
+
+const AI_Delay = (f) => {
+  clearTimeout(_timeoutId);
+  window.setTimeout(f, AI_SPEED);
+};
+
+export const AI_toggle = () => (_on ? AI_turnOff() : AI_turnOn());
+
+export const AI_isON = () => _on;
+
+export const AI_turnOn = () => {
+  AI_turnOff();
+  _on = true;
+  _newCircleSup = App.events.newCircle.subscribe({ next: AI });
+};
+
+export const AI_turnOff = () => {
+  _newCircleSup?.unsubscribe();
+  _newCircleSup = undefined;
+  clearTimeout(_timeoutId);
+  _on = false;
+};
+
+function AI() {
   if (App.currentFigure === null || isPause()) {
     return false;
   }
-
-  App.clearTimeout();
 
   const field = DeleteFromField(App.field, App.currentFigure);
   const variants = AIgetPosibleVariants(field, App.currentFigure);
@@ -200,33 +228,48 @@ function AIfieldRating(inField, inFigure) {
 }
 
 function AImove(toX, toState) {
-  AImoveDown(true);
-  AIrotate(true, toState);
-  AImoveX(true, toX);
-  FastDown();
+  AIWaitCanRotate(() => {
+    AIrotate(toState, () => {
+      AImoveX(toX, () => {
+        AI_Delay(FastDown);
+      });
+    });
+  });
 }
 
-function AImoveDown(loop) {
-  if (App.currentFigure.gridY < 0 && loop) {
-    loop = MoveDown();
-    AImoveDown(loop);
+function AIWaitCanRotate(next) {
+  if (App.currentFigure.gridY >= 0) {
+    return next();
   }
+  window.requestAnimationFrame(() => {
+    AIWaitCanRotate(next);
+  });
 }
 
-function AImoveX(loop, toX) {
-  if (App.currentFigure.gridX !== toX && loop) {
-    if (App.currentFigure.gridX > toX) {
-      loop = MoveLeft();
-    } else if (App.currentFigure.gridX < toX) {
-      loop = MoveRight();
+const AImoveX = (toX, next) => {
+  if (App.currentFigure && App.currentFigure.gridX === toX) {
+    return next();
+  }
+  AI_Delay(() => {
+    if (App.currentFigure === null) {
+      return;
     }
-    AImoveX(loop, toX);
-  }
-}
+    if (App.currentFigure.gridX > toX) {
+      MoveLeft();
+    } else {
+      MoveRight();
+    }
+    AImoveX(toX, next);
+  });
+};
 
-function AIrotate(loop, toState) {
-  if (App.currentFigure.currentState !== toState && loop) {
-    loop = Rotate();
-    AIrotate(loop, toState);
+const AIrotate = (toState, next) => {
+  if (App.currentFigure && App.currentFigure.currentState === toState) {
+    return next();
   }
-}
+  AI_Delay(() => {
+    if (Rotate()) {
+      AIrotate(toState, next);
+    }
+  });
+};

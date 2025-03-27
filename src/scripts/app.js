@@ -1,7 +1,8 @@
 import { RandomPieceGenerator } from "./figures";
 import { DeepCopy, eachMatrix, formatNumber } from "./lib";
-import { AI } from "./ai";
+import { AI_isON, AI_toggle, AI_turnOff, AI_turnOn } from "./ai";
 import { createRenderer } from "./render";
+import { ksBehaviourSubject } from "@keiii/k-stream";
 
 const fieldX = 10; // размер поля по горизонтали
 const fieldY = 22; // размер поля по вертикали
@@ -26,16 +27,20 @@ export const App = {
   score: null, // счет (кол-во линий)
   startTime: null, // время запуска игры
   isPause: true,
-  turnOnAI: false,
+  _animationId: null,
   _timeoutId: null,
   clearTimeout() {
-    window.cancelAnimationFrame(App._timeoutId);
+    window.cancelAnimationFrame(App._animationId);
     window.clearTimeout(App._timeoutId);
   },
   delay(f, ms) {
     App.clearTimeout();
     App._timeoutId = window.setTimeout(f, ms);
   },
+  events: {
+    newCircle: ksBehaviourSubject(),
+  },
+  _fastDown: false,
 };
 
 const fillField = function () {
@@ -98,6 +103,7 @@ function GetNextFigure() {
 }
 
 function NewCircle() {
+  App._fastDown = false;
   App.currentFigure = null;
   App.field = DeleteActiveMarker(App.field);
 
@@ -117,7 +123,7 @@ function NewCircle() {
     Draw();
     GameTick();
 
-    if (App.turnOnAI) AI();
+    App.events.newCircle.next();
   };
 
   if (ClearLines()) {
@@ -132,13 +138,22 @@ function NewCircle() {
 }
 
 function GameTick() {
-  App.delay(() => {
+  if (App._fastDown) {
     if (MoveDown()) {
-      GameTick();
+      window.cancelAnimationFrame(App._animationId);
+      App._animationId = requestAnimationFrame(GameTick);
     } else {
       NewCircle();
     }
-  }, /* скорость падения фигуры */ App.speedCurrent);
+  } else {
+    App.delay(() => {
+      if (MoveDown()) {
+        GameTick();
+      } else {
+        NewCircle();
+      }
+    }, /* скорость падения фигуры */ App.speedCurrent);
+  }
 }
 
 export function PutOnField(inField, figure) {
@@ -294,13 +309,8 @@ export function Rotate() {
 }
 
 export function FastDown() {
-  App.clearTimeout();
-
-  if (MoveDown()) {
-    App._timeoutId = requestAnimationFrame(FastDown);
-  } else {
-    GameTick();
-  }
+  App._fastDown = true;
+  GameTick();
 }
 
 function ClearLines() {
@@ -378,6 +388,8 @@ function AddTimeZero(num) {
 }
 
 function GameOver() {
+  GamePause(); // disable control
+
   let message = '<div class="popup">';
   message += '<div class="title">Good game!</div>';
   message +=
@@ -389,12 +401,8 @@ function GameOver() {
   message += "</div>";
   const popup = document.getElementById("popup");
   popup.innerHTML = message;
-  GamePause(); // disable control
 
-  let listener;
-  listener = function (event) {
-    event.stopPropagation();
-    GameResume();
+  const listener = function () {
     Start();
     popup.removeEventListener("click", listener, false);
     popup.innerHTML = "";
@@ -407,7 +415,7 @@ const gameStatus = document.getElementById("status");
 function Draw() {
   if (App.field === null) return;
   App.renderer.render({
-    ai: App.turnOnAI,
+    ai: AI_isON(),
     score: App.score,
     field: App.field,
     updateStatus: (html) => (gameStatus.innerHTML = html),
@@ -494,10 +502,10 @@ export const init = () => {
     });
 
     const watchAIButton = document.getElementById("js-watch-ai-button");
-    watchAIButton.addEventListener("click", function (event) {
+    watchAIButton.addEventListener("click", () => {
       removeIntro();
-      App.turnOnAI = true;
       Start();
+      AI_turnOn();
     });
   }
 
@@ -532,12 +540,7 @@ export const init = () => {
     if (isPause()) return;
 
     if (event.code === "KeyH") {
-      if (App.turnOnAI) {
-        App.turnOnAI = false;
-      } else {
-        App.turnOnAI = true;
-        AI();
-      }
+      AI_toggle();
     } else if (event.code === "ArrowDown") {
       FastDown();
     }
