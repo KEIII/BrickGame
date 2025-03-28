@@ -2,6 +2,9 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  server: {
+    host: "127.0.0.1", // Devcontainer workaround https://github.com/vitejs/vite/issues/16522#issuecomment-2084322973
+  },
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
@@ -16,7 +19,7 @@ export default defineConfig({
         background_color: "#111111",
         icons: [
           {
-            src: "src/favicon.svg",
+            src: "favicon.svg",
             sizes: "any",
             type: "image/svg+xml",
           },
@@ -36,7 +39,4 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    host: "127.0.0.1", // Devcontainer workaround https://github.com/vitejs/vite/issues/16522#issuecomment-2084322973
-  },
 });
