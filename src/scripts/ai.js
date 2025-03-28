@@ -20,8 +20,8 @@ let _newCircleSup;
 const AI_SPEED = 200;
 
 const AI_Delay = (f) => {
-  clearTimeout(_timeoutId);
-  window.setTimeout(f, AI_SPEED);
+  window.clearTimeout(_timeoutId);
+  _timeoutId = window.setTimeout(f, AI_SPEED);
 };
 
 export const AI_toggle = () => (_on ? AI_turnOff() : AI_turnOn());
@@ -37,7 +37,7 @@ export const AI_turnOn = () => {
 export const AI_turnOff = () => {
   _newCircleSup?.unsubscribe();
   _newCircleSup = undefined;
-  clearTimeout(_timeoutId);
+  window.clearTimeout(_timeoutId);
   _on = false;
 };
 
