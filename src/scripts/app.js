@@ -130,7 +130,7 @@ function NewCircle() {
     const blinkAnimationDuration = 300;
     App.delay(
       fn,
-      /* время анимации удаления линии */ blinkAnimationDuration * 3,
+      /* время анимации удаления линии */ blinkAnimationDuration * 3
     );
   } else {
     fn();
@@ -248,7 +248,7 @@ export function DeleteFromField(inField, inFigure) {
           field[pos_y][pos_x][2] = 0;
           field[pos_y][pos_x][3] = 0;
         }
-      },
+      }
     );
   }
 
@@ -523,17 +523,23 @@ export const init = () => {
     }
   });
 
+  const pausePopup = document.getElementById("pause");
+
+  document.getElementById("js-resume-btn").addEventListener("click", () => {
+    GameResume();
+    pausePopup.style.display = "none";
+  });
+
   window.addEventListener("keydown", function (event) {
     if (event.code === "Escape") {
-      const el = document.getElementById("pause");
       if (isPause()) {
-        if (el.style.display !== "none") {
+        if (pausePopup.style.display !== "none") {
+          pausePopup.style.display = "none";
           GameResume();
-          el.style.display = "none";
         }
       } else {
+        pausePopup.style.display = "block";
         GamePause();
-        el.style.display = "block";
       }
     }
 
@@ -556,7 +562,7 @@ export const init = () => {
       fp.top,
       fp.bottom,
       event.clientX,
-      event.clientY,
+      event.clientY
     );
 
     if (area === 1 || area === 4 || area === 7) {

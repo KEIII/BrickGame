@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -13,8 +13,13 @@
   </head>
   <body>
     <div id="status" class="status"></div>
-    <div id="pause" style="display:none">
-      <div class="popup"><div class="title">Paused</div><div class="button-box"><div class="button">Resume game</div></div></div>
+    <div id="pause" style="display: none">
+      <div class="popup">
+        <div class="title">Paused</div>
+        <div class="button-box">
+          <div id="js-resume-btn" class="button">Resume</div>
+        </div>
+      </div>
     </div>
     <div id="popup">
       <div id="intro" class="popup">
@@ -53,7 +58,13 @@
         </table>
         <div class="button-box">
           <div id="js-play-button" class="button">Play</div>
-          <div id="js-watch-ai-button" class="button" style="background-color: #2ecc71">Watch AI</div>
+          <div
+            id="js-watch-ai-button"
+            class="button"
+            style="background-color: #2ecc71"
+          >
+            Watch AI
+          </div>
         </div>
       </div>
     </div>
